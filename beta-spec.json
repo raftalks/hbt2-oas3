@@ -1,0 +1,2358 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HBT Api",
+    "contact": { "email": "raf@hummingbird.travel" },
+    "version": "1.0"
+  },
+  "servers": [{ "url": "https://api.hbtserver.net/v1" }],
+  "paths": {
+    "/booking/{hotelCode}/create/{responseToken}": {
+      "post": {
+        "tags": ["bookings"],
+        "summary": "Make a booking for a given hotel",
+        "operationId": "makeBookingRequest",
+        "parameters": [
+          {
+            "name": "hotelCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "responseToken",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "description": "Booking criteria",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MakeBookingRequest" }
+            },
+            "application/xml": {
+              "schema": { "$ref": "#/components/schemas/MakeBookingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking response token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MakeBookingResponse" }
+              },
+              "application/xml": {
+                "schema": { "$ref": "#/components/schemas/MakeBookingResponse" }
+              }
+            }
+          },
+          "422": { "description": "Validation Exception" }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/booking/{bookingResponseToken}": {
+      "get": {
+        "tags": ["bookings"],
+        "summary": "Fetch details of a booking",
+        "operationId": "fetchBookingDetails",
+        "parameters": [
+          {
+            "name": "bookingResponseToken",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail of the booking",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDetailResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDetailResponse"
+                }
+              }
+            }
+          },
+          "404": { "description": "Booking not found" }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/price/search": {
+      "post": {
+        "tags": ["search"],
+        "summary": "Fetch hotels with price based on given criteria",
+        "operationId": "hotelPriceSearch",
+        "requestBody": {
+          "description": "request criteria",
+          "required": true,
+          "content": {
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/hotelPriceSearchRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/hotelPriceSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelPriceSearchResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelPriceSearchResponse"
+                }
+              }
+            }
+          },
+          "422": { "description": "Validation Exception" }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/price/search/listing/{responseToken}": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Fetch result of a search request",
+        "parameters": [
+          {
+            "name": "responseToken",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "price_details",
+            "in": "query",
+            "description": "if enabled, price details with breakdown options are provided in the response.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing result for the request gets returned with each hotel showing the best deal available",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelBasicPriceSearchListingResultResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelBasicPriceSearchListingResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/price/hotel/{hotelCode}/deals/{responseToken}": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Fetch deals from a specific hotel for a search request.",
+        "parameters": [
+          {
+            "name": "responseToken",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "hotelCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Show all the deals available under a hotel identified by hotel code",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HotelPriceDetail" }
+              },
+              "application/xml": {
+                "schema": { "$ref": "#/components/schemas/HotelPriceDetail" }
+              }
+            }
+          }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/properties/{destinationCode}": {
+      "get": {
+        "tags": ["properties"],
+        "summary": "List properties in a given destination.",
+        "parameters": [
+          {
+            "name": "destinationCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Show properties under a destination by a given destination code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationPropertyListingResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationPropertyListingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Destination not found, make sure destination code is correct."
+          }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    },
+    "/properties/{destinationCode}/{hotelCode}": {
+      "get": {
+        "tags": ["properties"],
+        "summary": "Fetch details of a hotel in a destination by hotel code.",
+        "parameters": [
+          {
+            "name": "destinationCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "hotelCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of a property",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDetailResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyDetailResponse"
+                }
+              }
+            }
+          },
+          "404": { "description": "Hotel / Destination not found" }
+        },
+        "security": [{ "api_auth": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RequestSource": {
+        "required": ["userEmail"],
+        "properties": {
+          "userEmail": {
+            "description": "[Required] HBT User email account to link the booking/request",
+            "type": "string",
+            "format": "email"
+          },
+          "requestRef": {
+            "description": "[Optional] A Unique reference ID to tag the request",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "1000987654321234567890"
+          }
+        },
+        "type": "object"
+      },
+      "hotelPriceSearchRequest": {
+        "description": "hotelPriceSearchRequest criteria",
+        "properties": {
+          "source": { "$ref": "#/components/schemas/RequestSource" },
+          "requestCriteria": {
+            "required": ["destination", "stayPeriod"],
+            "properties": {
+              "destination": {
+                "required": ["destinationCode"],
+                "properties": {
+                  "destinationCode": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "MV"
+                  },
+                  "locationCode": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "ANY"
+                  }
+                },
+                "type": "object"
+              },
+              "hotelCodes": {
+                "type": "array",
+                "items": { "type": "string", "xml": { "name": "item" } },
+                "xml": { "wrapped": true },
+                "example": [
+                  "h5cc6bdd77a6f9",
+                  "h5cdc802f5dbed",
+                  "h5ce7d7df28a68"
+                ]
+              },
+              "stayPeriod": {
+                "required": ["checkInDate", "checkOutDate"],
+                "properties": {
+                  "checkInDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2020-07-04"
+                  },
+                  "checkOutDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2020-07-14"
+                  }
+                },
+                "type": "object"
+              },
+              "nationalityCode": {
+                "description": "Nationality of the primary guest",
+                "type": "string",
+                "example": "GB"
+              },
+              "roomRequests": {
+                "type": "array",
+                "items": {
+                  "required": ["adults", "children"],
+                  "properties": {
+                    "adults": {
+                      "type": "integer",
+                      "maxLength": 9,
+                      "example": "2"
+                    },
+                    "children": {
+                      "type": "integer",
+                      "maxLength": 6,
+                      "example": "1"
+                    },
+                    "childAges": {
+                      "description": "Children ages at the time of check-in date",
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "xml": { "name": "age", "attribute": true },
+                        "example": 3
+                      },
+                      "xml": { "wrapped": true }
+                    }
+                  },
+                  "type": "object",
+                  "xml": { "name": "roomRequest" }
+                },
+                "xml": { "wrapped": true }
+              },
+              "mealTypeCode": {
+                "description": "Preferred meal type code, example BB, HB, FB, AI",
+                "type": "string",
+                "example": "HB"
+              },
+              "vacationTypeCode": {
+                "description": "Vacation type code to describe the purpose of the trip such as honeymoon",
+                "type": "string",
+                "example": "HON"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "xml": { "prefix": "hbt" }
+      },
+      "MakeBookingRequest": {
+        "description": "Make a booking based on a given criteria.",
+        "properties": {
+          "bookingRequest": {
+            "properties": {
+              "primaryGuestName": { "type": "string" },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "id": { "type": "string", "xml": { "attribute": true } },
+                    "room": { "type": "string" },
+                    "deal": { "type": "string" }
+                  },
+                  "type": "object",
+                  "xml": { "name": "group" }
+                },
+                "xml": { "wrapped": true }
+              }
+            },
+            "type": "object",
+            "example": {
+              "primaryGuestName": "John Doe",
+              "groups": [
+                { "id": "group-1", "room": "DBV", "deal": "05e15b0cfd4c4d" }
+              ]
+            }
+          }
+        },
+        "type": "object",
+        "xml": { "prefix": "hbt" }
+      },
+      "MakeBookingResponse": {
+        "properties": {
+          "responseToken": { "type": "string", "xml": { "attribute": true } },
+          "method": { "type": "string", "xml": { "attribute": true } },
+          "link": { "type": "string" }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        },
+        "example": {
+          "responseToken": "c4e90180-ebb0-4392-8026-62d80e39ecef",
+          "method": "GET",
+          "link": "https://api.hummingbird.travel/v1/booking/c4e90180-ebb0-4392-8026-62d80e39ecef"
+        }
+      },
+      "HotelPriceSearchResponse": {
+        "description": "Response provide the url to fetch the result using the requestID.",
+        "properties": {
+          "responseToken": {
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "46101566-13c3-4c4a-a0b4-386e7788e6ed"
+          },
+          "method": {
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "GET"
+          },
+          "link": {
+            "type": "string",
+            "example": "https://xxx.xxxxx.xxx/v1/price/search/listing/46101566-13c3-4c4a-a0b4-386e7788e6ed"
+          }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        }
+      },
+      "HotelBasicPriceSearchListingResultResponse": {
+        "description": "HotelPriceSearchResponse object returned for price search request",
+        "properties": {
+          "responseToken": {
+            "description": "The token issued by the system to fetch the result for a request",
+            "type": "string",
+            "format": "string",
+            "example": "db9b1ba7-e217-4feb-936e-08bfa5e10615"
+          },
+          "result": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AllDealsPropertyObject" },
+            "xml": { "name": "result", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        }
+      },
+      "BookingDetailResponse": {
+        "properties": {
+          "responseToken": {
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "739a34c7-672a-427b-87d7-c7f444a560b8"
+          },
+          "reference": {
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "HBT20A10011"
+          },
+          "subject": { "type": "string", "example": "The Sun Siyam Irufushi" },
+          "price": {
+            "properties": {
+              "currencyCode": {
+                "xml": { "attribute": true },
+                "example": "USD"
+              },
+              "amount": {
+                "type": "integer",
+                "xml": { "attribute": true },
+                "example": "10632.70"
+              }
+            },
+            "type": "object"
+          },
+          "tripStartDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2020-01-04"
+          },
+          "tripEndDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2020-01-18"
+          },
+          "bookedDate": {
+            "type": "string",
+            "format": "datetime",
+            "example": "2020-01-01 10:37:17"
+          },
+          "holidayType": { "type": "string", "example": "Honeymoon" },
+          "primaryGuestName": { "type": "string", "example": "John Doe" },
+          "paxGroups": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BookingPaxGroupObject" },
+            "xml": { "wrapped": true }
+          },
+          "hotels": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/HotelBookingObject" },
+            "xml": { "wrapped": true }
+          },
+          "destinationServices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DestinationServiceItemObject"
+            },
+            "xml": { "wrapped": true },
+            "example": [
+              {
+                "destinationCode": "MV",
+                "serviceType": "ground_handling",
+                "serviceCode": "VIP",
+                "serviceName": "VIP Handling",
+                "numAdults": 2,
+                "numChildren": 2,
+                "description": ["VIP Handling charges for 4 px"],
+                "price": { "currencyCode": "USD", "amount": 120 }
+              }
+            ]
+          },
+          "transfers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransportationItemObject"
+            },
+            "xml": { "wrapped": true },
+            "example": [
+              {
+                "destinationCode": "MV",
+                "startDate": "2020-01-04",
+                "numPax": "4",
+                "private": 0,
+                "description": [
+                  "Domestic + Speed boat Transfers on 2020-01-04 for 2 adults and 2 children"
+                ],
+                "vehicles": [
+                  {
+                    "qty": 1,
+                    "code": "SPB",
+                    "name": "Speedboat",
+                    "type": "sea_transfer"
+                  }
+                ],
+                "price": { "currencyCode": "USD", "amount": 315 }
+              },
+              {
+                "destinationCode": "MV",
+                "startDate": "2020-01-18",
+                "numPax": "4",
+                "private": 0,
+                "description": [
+                  "Domestic + Speed boat Transfers on 2020-01-18 for 2 adults 2 and children"
+                ],
+                "vehicles": [
+                  {
+                    "qty": 1,
+                    "code": "SPB",
+                    "name": "Speedboat",
+                    "type": "sea_transfer"
+                  }
+                ],
+                "price": { "currencyCode": "USD", "amount": 315 }
+              }
+            ]
+          },
+          "grandTotal": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BookingGrandTotalObject" },
+            "xml": { "wrapped": true },
+            "example": [{ "currencyCode": "USD", "amount": 3058.73 }]
+          }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        }
+      },
+      "BookingGrandTotalObject": {
+        "properties": {
+          "currencyCode": { "type": "string", "xml": { "attribute": true } },
+          "amount": { "type": "number", "xml": { "attribute": true } }
+        },
+        "type": "object",
+        "xml": { "name": "item" }
+      },
+      "HotelPriceDetail": {
+        "description": "HotelPriceDetail object returned with all the packages generated for all accommodation options available",
+        "properties": {
+          "responseToken": {
+            "description": "The token issued by the system to fetch the result for a request",
+            "type": "string",
+            "format": "string",
+            "example": "db9b1ba7-e217-4feb-936e-08bfa5e10615"
+          },
+          "result": {
+            "properties": {
+              "hotelCode": {
+                "description": "Hotel identifier code",
+                "type": "string",
+                "xml": { "attribute": true },
+                "example": "h5cc6bdd77a6f9"
+              },
+              "currency": {
+                "description": "Currency Code",
+                "type": "string",
+                "example": "USD"
+              },
+              "groups": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/PackageGroupObject" },
+                "xml": { "name": "groups", "wrapped": true }
+              },
+              "compulsoryOtherInclusives": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GenericPricedItemObject"
+                },
+                "xml": { "wrapped": true },
+                "example": [
+                  {
+                    "code": "GHS",
+                    "name": "Ground Handling",
+                    "type": "compulsory_item",
+                    "price": 60,
+                    "description": ["Ground Handling charges for 3 pax"]
+                  },
+                  {
+                    "code": "ADC",
+                    "name": "Airport Development Charge",
+                    "type": "compulsory_item",
+                    "price": 30,
+                    "description": ["Airport development charge for 3 pax"]
+                  }
+                ]
+              }
+            },
+            "type": "object",
+            "xml": { "name": "result", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        }
+      },
+      "HotelDealListingItem": {
+        "properties": {
+          "code": {
+            "description": "Hotel unique code identifier",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "h5c6274cc2e09d"
+          },
+          "name": {
+            "description": "Name of the hotel",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Demo Maldives Resort"
+          },
+          "location": {
+            "description": "Short location description",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Kaafu Atoll, Maldives"
+          },
+          "link": {
+            "description": "Link to fetch all the available deals under the hotel",
+            "properties": {
+              "url": {
+                "description": "Full API url with request token to fetch the hotel deals",
+                "type": "string",
+                "xml": { "attribute": true },
+                "example": "https://xxx.xxxxx.xxx/v1/price/hotel/h5c6274cc2e09d/deals/db9b1ba7-e217-4feb-936e-08bfa5e10615"
+              },
+              "method": {
+                "description": "HTTP method to use",
+                "type": "string",
+                "xml": { "attribute": true },
+                "example": "GET"
+              }
+            },
+            "type": "object"
+          },
+          "rating": {
+            "description": "Hummingbird Hotel Rating",
+            "properties": {
+              "label": { "type": "string", "example": "Luxury Property" },
+              "stars": { "type": "integer", "example": "5" }
+            },
+            "type": "object"
+          },
+          "cancellationPolicy": {
+            "description": "Booking Cancellation policy",
+            "properties": {
+              "text": {
+                "type": "string",
+                "example": "Last minute exclusive deal!"
+              },
+              "description": {
+                "type": "string",
+                "example": "30% of the total amount for accommodation is chargeable if cancelled after confirming this booking"
+              }
+            },
+            "type": "object"
+          },
+          "paxDetails": {
+            "properties": {
+              "totalPax": {
+                "type": "integer",
+                "xml": { "attribute": true },
+                "example": "3"
+              },
+              "numAdults": { "type": "integer", "example": "2" },
+              "numChildren": { "type": "integer", "example": "1" }
+            },
+            "type": "object"
+          },
+          "deal": {
+            "properties": {
+              "numRooms": {
+                "type": "integer",
+                "xml": { "attribute": true },
+                "example": "1"
+              },
+              "roomType": {
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "WVILLA"
+                  },
+                  "name": { "type": "string", "example": "Water Villa" }
+                },
+                "type": "object"
+              },
+              "mealType": {
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "BB"
+                  },
+                  "name": { "type": "string", "example": "Bed & Breakfast" }
+                },
+                "type": "object"
+              },
+              "transfer": {
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "SPBT"
+                  },
+                  "name": { "type": "string", "example": "Speedboat transfer" }
+                },
+                "type": "object"
+              },
+              "price": {
+                "properties": {
+                  "currencyCode": {
+                    "type": "string",
+                    "xml": { "attribute": true },
+                    "example": "USD"
+                  },
+                  "discount": {
+                    "description": "discount amount if any discount was applied.",
+                    "type": "string",
+                    "example": "100"
+                  },
+                  "gross": {
+                    "description": "price before discount",
+                    "type": "string",
+                    "example": "4562"
+                  },
+                  "nett": {
+                    "description": "price after discount",
+                    "type": "string",
+                    "example": "4462"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "xml": { "name": "hotel" }
+      },
+      "HotelPriceSearchListingResultResponse": {
+        "description": "HotelPriceSearchResponse object returned for price search request",
+        "properties": {
+          "responseToken": {
+            "description": "The token issued by the system to fetch the result for a request",
+            "type": "string",
+            "format": "string",
+            "example": "db9b1ba7-e217-4feb-936e-08bfa5e10615"
+          },
+          "result": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/HotelDealListingItem" },
+            "xml": { "name": "result", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "prefix": "hbt" }
+      },
+      "PackageAccommodationInfoObject": {
+        "properties": {
+          "startDate": {
+            "type": "date",
+            "xml": { "attribute": true },
+            "example": "2020-07-01"
+          },
+          "endDate": {
+            "type": "date",
+            "xml": { "attribute": true },
+            "example": "2020-07-08"
+          },
+          "splits": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SplitStayItemObject" },
+            "xml": { "wrapped": true }
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" },
+          "mealPlan": {
+            "type": "object",
+            "$ref": "#/components/schemas/PackageAccommodationMealInfoObject"
+          }
+        },
+        "type": "object",
+        "example": {
+          "startDate": "2020-07-01",
+          "endDate": "2020-07-08",
+          "description": [
+            "Deluxe Beach Villa from 2020-07-04 to 2020-07-14, for 10 nights"
+          ],
+          "mealPlan": { "code": "HB", "name": "Half Board" }
+        }
+      },
+      "AdvanceDepositObject": {
+        "properties": {
+          "applicable": {
+            "description": "Indicates if advance deposit is required or not.",
+            "type": "boolean",
+            "xml": { "attribute": true }
+          },
+          "depositAmount": {
+            "description": "Total deposit amount",
+            "type": "number",
+            "format": "double",
+            "xml": { "name": "depositAmount" },
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "xml": { "name": "advanceDeposit" }
+      },
+      "AllDealsPropertyObject": {
+        "properties": {
+          "code": {
+            "description": "Hotel identification code.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "h5cc6bdd77a6f9"
+          },
+          "groups": {
+            "description": "List of pax groups. Each pax group would have multiple room types for which deals are given.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllDealsPropertyGroupObject"
+            },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "property" }
+      },
+      "AllDealsPropertyGroupObject": {
+        "properties": {
+          "id": {
+            "description": "Identification for the pax group.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "group-1"
+          },
+          "rooms": {
+            "description": "Array of rooms available for the pax group.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllDealsPropertyPaxGroupRoomObject"
+            },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "group" }
+      },
+      "PropertyPaxGroupRoomDealDetailedPriceObject": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PropertyPaxGroupRoomDealPriceObject"
+          },
+          {
+            "properties": {
+              "accommodation": {
+                "description": "Price details for accommodations.",
+                "properties": {
+                  "gross": {
+                    "description": "Price details for accommodations.",
+                    "type": "integer"
+                  },
+                  "discount": {
+                    "description": "Price details for accommodations.",
+                    "type": "integer"
+                  },
+                  "nett": {
+                    "description": "Price details for accommodations.",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "transfer": {
+                "description": "Price details for transfers.",
+                "properties": {
+                  "gross": {
+                    "description": "Price details for transfers.",
+                    "type": "integer"
+                  },
+                  "discount": {
+                    "description": "Price details for transfers.",
+                    "type": "integer"
+                  },
+                  "nett": {
+                    "description": "Price details for transfers.",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "mealUpgrade": {
+                "description": "Price details for meal upgrades.",
+                "properties": {
+                  "gross": {
+                    "description": "Price details for meal upgrades.",
+                    "type": "integer"
+                  },
+                  "discount": {
+                    "description": "Price details for meal upgrades.",
+                    "type": "integer"
+                  },
+                  "nett": {
+                    "description": "Price details for meal upgrades.",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "others": {
+                "description": "Other charges.",
+                "properties": {
+                  "nett": { "description": "Other charges.", "type": "integer" }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object",
+            "example": {
+              "currency": "USD",
+              "gross": 11943.5,
+              "discount": 1980.9,
+              "nett": 9962.7,
+              "details": {
+                "accommodation": {
+                  "gross": 7743.6,
+                  "discount": 1980.9,
+                  "nett": 5762.7
+                },
+                "transfer": { "gross": 1240, "discount": 0, "nett": 1240 },
+                "mealUpgrade": { "gross": 2400, "discount": 0, "nett": 2400 },
+                "others": { "nett": 560 }
+              }
+            }
+          }
+        ]
+      },
+      "AllDealsPropertyPaxGroupRoomDealObject": {
+        "properties": {
+          "id": {
+            "description": "Identifier for the deal.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "15e1fe822517ab"
+          },
+          "key": {
+            "description": "Unique key for the package. This key shall be used when booking.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "group-1:DBV:15e1fe822517ab"
+          },
+          "info": {
+            "description": "Deal information object.",
+            "properties": {
+              "accommodation": {
+                "description": "Details of accommodation under a package",
+                "type": "object",
+                "$ref": "#/components/schemas/PackageAccommodationInfoObject"
+              },
+              "transfer": {
+                "description": "Details of transfer under a package",
+                "properties": {
+                  "arrival": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PackageArrivalTransferInfoObject"
+                  },
+                  "departure": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PackageDepartureTransferInfoObject"
+                  }
+                },
+                "type": "object"
+              },
+              "others": {
+                "description": "An array of other items under a package",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GenericItemInfoObject"
+                },
+                "xml": { "name": "others", "wrapped": true }
+              }
+            },
+            "type": "object"
+          },
+          "price": {
+            "type": "object",
+            "example": {
+              "currency": "USD",
+              "gross": 11943.5,
+              "discount": 1980.9,
+              "nett": 9962.7
+            },
+            "$ref": "#/components/schemas/PropertyPaxGroupRoomDealPriceObject"
+          },
+          "cancellationPolicies": {
+            "description": "An array of cancellation policies for a package.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageCancellationPolicyObject"
+            },
+            "xml": { "name": "cancellationPolicies", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "deal" }
+      },
+      "PropertyPaxGroupRoomDealPriceObject": {
+        "properties": {
+          "currency": {
+            "description": "Currency code in which the price is given.",
+            "type": "string"
+          },
+          "gross": {
+            "description": "Gross amount for the deal.",
+            "type": "integer"
+          },
+          "discount": {
+            "description": "Discounted amount for the deal, if any.",
+            "type": "integer"
+          },
+          "nett": {
+            "description": "Nett amount for the deal.",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "example": {
+          "currency": "USD",
+          "gross": 11943.5,
+          "discount": 1980.9,
+          "nett": 9962.7
+        }
+      },
+      "AllDealsPropertyPaxGroupRoomObject": {
+        "properties": {
+          "code": {
+            "description": "Identification code for the room.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "DBV"
+          },
+          "name": {
+            "description": "Room name.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Deluxe Beach Villa"
+          },
+          "deals": {
+            "description": "Array of deals for the room.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllDealsPropertyPaxGroupRoomDealObject"
+            },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "room" }
+      },
+      "BookingGuestDetailObject": {
+        "properties": {
+          "id": {
+            "description": "The identification id of guest.",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "firstName": {
+            "description": "First name of the guest.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "lastName": {
+            "description": "Last name of the guest.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "type": {
+            "description": "Type of the pax.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "primary": {
+            "description": "Indicates whether a primary guest or not.",
+            "type": "boolean",
+            "xml": { "attribute": true }
+          },
+          "age": {
+            "description": "If the guest is a child, returns age of the child.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "nullable": true
+          },
+          "flightDetails": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/GuestFlightDetailsObject"
+            },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "guest" }
+      },
+      "BookingPaxGroupObject": {
+        "properties": {
+          "id": {
+            "description": "The identification id of the pax group.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "12"
+          },
+          "key": {
+            "description": "The identification key used to represent pax group.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "group-1"
+          },
+          "totalPax": {
+            "description": "Total number of pax in the group.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "4"
+          },
+          "numAdults": {
+            "description": "Total number of adults in the pax group.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "2"
+          },
+          "numChildren": {
+            "description": "Total number of children in the pax group.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "2"
+          },
+          "nationality": {
+            "description": "Nationality code of the passengers.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "GB"
+          },
+          "guestDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingGuestDetailObject"
+            },
+            "xml": { "wrapped": true },
+            "example": [
+              {
+                "id": 123,
+                "firstName": "John",
+                "lastName": "Doe",
+                "type": "adult",
+                "age": null,
+                "primary": true,
+                "flightDetails": [
+                  {
+                    "id": "1231",
+                    "airline": "EK",
+                    "flightNo": "565",
+                    "travelDate": "2020-01-01",
+                    "destinationCode": "MV",
+                    "direction": "arrival"
+                  },
+                  {
+                    "id": "1232",
+                    "airline": "EK",
+                    "flightNo": "566",
+                    "travelDate": "2020-01-14",
+                    "destinationCode": "MV",
+                    "direction": "departure"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "xml": { "name": "group" }
+      },
+      "PackageCancellationPolicyObject": {
+        "properties": {
+          "date": {
+            "description": "Date on which current cancellation policy object becomes active",
+            "type": "string",
+            "format": "date",
+            "xml": { "attribute": true }
+          },
+          "amount": {
+            "description": "Chargeable amount under current cancellation policy",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "amountType": {
+            "description": "Chargeable amount type (either flat value or percentage) under current cancellation policy",
+            "type": "string",
+            "enum": ["percentage", "amount"],
+            "xml": { "attribute": true }
+          },
+          "applyOn": {
+            "description": "Value type to apply the chargeable amount percentage in case `{amountType: 'percentage'}`",
+            "type": "string",
+            "enum": ["full-amount", "only-on-accommodation"],
+            "xml": { "attribute": true }
+          },
+          "active": {
+            "description": "Indicates if current cancellation policy is active",
+            "type": "boolean",
+            "xml": { "attribute": true }
+          },
+          "description": {
+            "description": "Description of cancellation policy",
+            "$ref": "#/components/schemas/DescriptionObject"
+          }
+        },
+        "type": "object",
+        "xml": { "name": "policy", "wrapped": true },
+        "example": {
+          "date": "2020-05-23T00:00.000000Z",
+          "name": "Year Round",
+          "amount": 100,
+          "amountType": "percentage",
+          "applyOn": "full-amount",
+          "active": false,
+          "description": [
+            "If cancelled on or after Jun 8, 2020, 100% of the total amount is chargeable"
+          ]
+        }
+      },
+      "DescriptionObject": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "xml": { "name": "line", "attribute": true },
+          "example": "sample description"
+        },
+        "xml": { "name": "description", "wrapped": true }
+      },
+      "DestinationServiceItemObject": {
+        "properties": {
+          "destinationCode": {
+            "description": "Destination to which the service applies to.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "MV"
+          },
+          "serviceType": {
+            "description": "Service type classification.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "ground_handling"
+          },
+          "serviceCode": {
+            "description": "Code of the service.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "VIP"
+          },
+          "serviceName": {
+            "description": "Name of the service.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "VIP Handling"
+          },
+          "numAdults": {
+            "description": "Number adults to which the service is booked for.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "2",
+            "nullable": true
+          },
+          "numChildren": {
+            "description": "Number of children to which the service is booked for.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "2",
+            "nullable": true
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" },
+          "price": {
+            "description": "Price of the service.",
+            "properties": {
+              "currencyCode": {
+                "description": "Price of the service.",
+                "type": "string"
+              },
+              "amount": {
+                "description": "Price of the service.",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "xml": { "name": "service" }
+      },
+      "ExtraBenefitObject": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Honeymoon benefits"
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" }
+        },
+        "type": "object",
+        "xml": { "name": "item" }
+      },
+      "FreeUpgradeObject": {
+        "description": "A *FreeUpgradeObject* represents an eligible free upgrade. Only one upgrade can be applied per item class.",
+        "properties": {
+          "itemClass": {
+            "description": "Upgrade item class.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "code": {
+            "description": "Code of the upgrade item.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Name of the upgrade item.",
+            "type": "string",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item", "wrapped": true },
+        "example": {
+          "itemClass": "meal_type",
+          "code": "FB",
+          "name": "Full Board"
+        }
+      },
+      "GenericItemInfoObject": {
+        "properties": {
+          "code": {
+            "description": "Item code.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Item name.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "type": {
+            "description": "Item class.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" }
+        },
+        "type": "object",
+        "xml": { "name": "item" },
+        "example": {
+          "code": "GTAX",
+          "type": "fixed_tax",
+          "name": "Green Tax",
+          "description": [
+            "Green Tax charge per pax per night from Jul 4, 2020 for 10 nights"
+          ]
+        }
+      },
+      "GuestFlightDetailsObject": {
+        "properties": {
+          "id": {
+            "description": "Identification id of the flight.",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "airline": { "type": "string", "xml": { "attribute": true } },
+          "flightNo": { "type": "string", "xml": { "attribute": true } },
+          "travelDate": {
+            "description": "Travel date of the flight.",
+            "type": "string",
+            "format": "datetime",
+            "xml": { "attribute": true }
+          },
+          "destinationCode": {
+            "description": "Code of the destination of flight.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "direction": {
+            "description": "Direction of the flight",
+            "type": "string",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "flight" }
+      },
+      "HotelBookingObject": {
+        "properties": {
+          "hotelCode": {
+            "description": "Identification code of the hotel",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "h5d344edb1b7c6"
+          },
+          "subject": {
+            "description": "Subject",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Reethi Faru Resort"
+          },
+          "currencyCode": {
+            "description": "Currency in which the hotel is priced with.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "USD"
+          },
+          "destinationCode": {
+            "description": "Destination code of the hotel",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "MV"
+          },
+          "checkInDate": {
+            "description": "Date of check-in into the hotel.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "2020-01-04"
+          },
+          "checkOutDate": {
+            "description": "Date of check-out from the hotel.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "2020-01-18"
+          },
+          "groups": {
+            "description": "Hotel booking groups.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HotelBookingPaxGroupObject"
+            }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "hotel" }
+      },
+      "HotelBookingPaxGroupObject": {
+        "properties": {
+          "key": {
+            "description": "Group key",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "group-1"
+          },
+          "splitStay": {
+            "description": "Indicates whether or not the group is staying on split-stay basis.",
+            "type": "boolean",
+            "xml": { "attribute": true }
+          },
+          "rooms": {
+            "description": "Accommodations for the group.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HotelBookingPaxGroupRoomObject"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "HotelBookingPaxGroupRoomObject": {
+        "properties": {
+          "code": {
+            "description": "Identification code of the package.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "DBV"
+          },
+          "name": {
+            "description": "Name of the package",
+            "type": "stirng",
+            "xml": { "attribute": true },
+            "example": "Deluxe Beach Villa"
+          },
+          "dealId": {
+            "description": "Room deal identifier.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "05de60a0da2b75"
+          },
+          "info": {
+            "properties": {
+              "accommodation": {
+                "description": "Room details",
+                "type": "object",
+                "$ref": "#/components/schemas/PackageAccommodationInfoObject"
+              }
+            },
+            "type": "object"
+          },
+          "price": {
+            "properties": {
+              "currencyCode": {
+                "type": "string",
+                "xml": { "attribute": true }
+              },
+              "grossTotal": { "type": "number" },
+              "nettTotal": { "type": "number" },
+              "discountAmount": { "type": "number" }
+            },
+            "type": "object",
+            "example": {
+              "currencyCode": "USD",
+              "grossTotal": 2308.73,
+              "nettTotal": 2308.73,
+              "discountAmount": 0
+            }
+          },
+          "freeUpgrades": {
+            "description": "Applicable free upgrades.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FreeUpgradeObject" },
+            "xml": { "wrapped": true }
+          },
+          "extraBenefits": {
+            "description": "Applicable extra benefits.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ExtraBenefitObject" },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object"
+      },
+      "PackageAccommodationMealInfoObject": {
+        "properties": {
+          "code": {
+            "description": "Meal plan code",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Meal plan name",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "example": { "code": "HB", "name": "Half Board" }
+      },
+      "PackageGroupObject": {
+        "properties": {
+          "id": {
+            "description": "group identifier key",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "group-1"
+          },
+          "name": {
+            "description": "Group name",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Group 1"
+          },
+          "paxDetails": { "$ref": "#/components/schemas/PaxDetailsObject" },
+          "room": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/PackageGroupRoomObject"
+            },
+            "xml": { "name": "rooms", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "group" }
+      },
+      "PackageGroupRoomObject": {
+        "properties": {
+          "code": {
+            "description": "Room identifier code.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "DBV"
+          },
+          "name": {
+            "description": "Room category name.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Deluxe Beach Villa"
+          },
+          "splitStay": {
+            "description": "Indicates if split stay accommodation.",
+            "type": "boolean",
+            "xml": { "attribute": true },
+            "example": "true"
+          },
+          "splits": {
+            "description": "Optional details of split stay. Available only for split stay accommodations.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SplitStayItemObject" },
+            "xml": { "wrapped": true }
+          },
+          "packages": {
+            "description": "Available packages for the accommodation option.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PackageRoomDealObject" },
+            "xml": { "wrapped": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "room" }
+      },
+      "PackageRoomDealObject": {
+        "properties": {
+          "id": {
+            "description": "Package identifier.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "05de60a0da2b75"
+          },
+          "info": {
+            "description": "Package information object.",
+            "properties": {
+              "accommodation": {
+                "description": "Details of accommodation under a package",
+                "type": "object",
+                "$ref": "#/components/schemas/PackageAccommodationInfoObject"
+              },
+              "transfer": {
+                "description": "Details of transfer under a package",
+                "properties": {
+                  "arrival": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PackageArrivalTransferInfoObject"
+                  },
+                  "departure": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PackageDepartureTransferInfoObject"
+                  }
+                },
+                "type": "object"
+              },
+              "others": {
+                "description": "An array of other items under a package",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GenericItemInfoObject"
+                },
+                "xml": { "name": "others", "wrapped": true }
+              }
+            },
+            "type": "object"
+          },
+          "price": {
+            "description": "Pricing details of a package with the breakdowns on accommodations, transfer and other charges.",
+            "properties": {
+              "grossTotal": {
+                "description": "Gross total of a package.",
+                "type": "integer"
+              },
+              "nettTotal": {
+                "description": "Nett Total of a package.",
+                "type": "integer"
+              },
+              "discountAmount": {
+                "description": "Total amount of discount of a package.",
+                "type": "integer"
+              },
+              "accommodationTotalAmount": {
+                "description": "Total amount charged for accommodation under a package.",
+                "type": "integer"
+              },
+              "transferTotalAmount": {
+                "description": "Total amount charged for transfer under a package.",
+                "type": "integer"
+              },
+              "otherChargesTotalAmount": {
+                "description": "Total amount of other charges under a package.",
+                "type": "integer"
+              },
+              "price": {
+                "description": "Advance deposit details",
+                "type": "object",
+                "$ref": "#/components/schemas/AdvanceDepositObject"
+              }
+            },
+            "type": "object",
+            "example": {
+              "grossTotal": 8361,
+              "nettTotal": 6358.52,
+              "discountAmount": 2002.48,
+              "accommodationTotalAmount": 7020.18,
+              "transferTotalAmount": 1160.82,
+              "otherChargesTotalAmount": 180,
+              "advanceDeposit": { "applicable": true, "depositAmount": 100 }
+            }
+          },
+          "cancellationPolicies": {
+            "description": "An array of cancellation policies for a package.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageCancellationPolicyObject"
+            },
+            "xml": { "name": "cancellationPolicies", "wrapped": true }
+          },
+          "freeUpgrades": {
+            "description": "An array of free upgrades for a package.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FreeUpgradeObject" },
+            "xml": { "wrapped": true }
+          },
+          "extraBenefits": {
+            "description": "An array of extra benefits for a package.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ExtraBenefitObject" },
+            "xml": { "wrapped": true },
+            "example": [
+              {
+                "title": "Honeymoon benefits",
+                "description": [
+                  "Fruit basket upon arrival\n A bottle of wine upon arrival in the villa\n 30 minutes Spa massage per couple, per stay\n Romantic candle-lit dinner for the couple once during the stay\n In-villa floral bath (once during the stay)\n Special evening Turn-down service with bed decoration once during the stay\n Complimentary in-villa breakfast for the couple once during the stay\n Celebratory cake"
+                ]
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "xml": { "name": "package" }
+      },
+      "PackageArrivalTransferInfoObject": {
+        "type": "object",
+        "example": {
+          "code": "DMFL+SPL",
+          "name": "Domestic Flight + Sea Plane",
+          "date": "2020-07-08"
+        },
+        "allOf": [{ "$ref": "#/components/schemas/PackageTransferInfoObject" }]
+      },
+      "PackageDepartureTransferInfoObject": {
+        "type": "object",
+        "example": {
+          "code": "DMFL",
+          "name": "Domestic Flight",
+          "date": "2020-08-10",
+          "description": [
+            "Domestic Flight on 2020-08-10 for 2 adults, 1 children"
+          ],
+          "vehicles": [
+            {
+              "code": "DPLN",
+              "name": "Domestic Air Plane",
+              "qty": 1,
+              "type": "air_transfer"
+            }
+          ]
+        },
+        "allOf": [{ "$ref": "#/components/schemas/PackageTransferInfoObject" }]
+      },
+      "BookingPackageRoomDealObject": {
+        "xml": { "name": "deal" },
+        "allOf": [{ "$ref": "#/components/schemas/PackageRoomDealObject" }]
+      },
+      "PaxDetailsObject": {
+        "required": ["adults", "children"],
+        "properties": {
+          "totalPax": {
+            "type": "integer",
+            "maxLength": 9,
+            "xml": { "attribute": true },
+            "example": 3
+          },
+          "nationality": {
+            "type": "string",
+            "maxLength": 2,
+            "xml": { "attribute": true },
+            "example": "GB"
+          },
+          "adults": { "type": "integer", "maxLength": 9, "example": 2 },
+          "children": {
+            "properties": {
+              "numChildren": {
+                "type": "integer",
+                "maxLength": 6,
+                "xml": { "attribute": true },
+                "example": 1
+              },
+              "ages": {
+                "description": "Children ages at the time of check-in date",
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "xml": { "name": "age", "attribute": true },
+                  "example": 3
+                },
+                "xml": { "wrapped": false }
+              }
+            },
+            "type": "object"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "xml": { "name": "line", "attribute": true },
+              "example": "2 adults, 1 child"
+            },
+            "xml": { "name": "description", "wrapped": true }
+          }
+        },
+        "type": "object"
+      },
+      "GenericPricedItemObject": {
+        "allOf": [
+          { "$ref": "#/components/schemas/GenericItemInfoObject" },
+          {
+            "properties": {
+              "price": {
+                "type": "integer",
+                "xml": { "attribute": true },
+                "example": "124"
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
+      "PropertyAccommodationObject": {
+        "description": "Details of a room type in a property.",
+        "properties": {
+          "code": {
+            "description": "Identification code of the Room type.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Name of the room type.",
+            "type": "string",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item" },
+        "example": { "code": "BV", "name": "Beach Villa" }
+      },
+      "PropertyDetailObject": {
+        "properties": {
+          "id": {
+            "description": "Identification id of the property.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "1"
+          },
+          "code": {
+            "description": "Identification code of the property.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "h5cc6bdd77a6f9"
+          },
+          "name": {
+            "description": "Name of the property.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "The Sun Siyam Irufushi"
+          },
+          "checkInTime": {
+            "description": "Check-in time for the property.",
+            "type": "string",
+            "format": "time",
+            "xml": { "attribute": true },
+            "example": "12:00"
+          },
+          "checkOuTime": {
+            "description": "Check-out time for the property.",
+            "type": "string",
+            "format": "time",
+            "xml": { "attribute": true },
+            "example": "11:30"
+          },
+          "type": {
+            "description": "Type of the property",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Resort"
+          },
+          "numRooms": {
+            "description": "Number of rooms in the property.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "240"
+          },
+          "numRestaurants": {
+            "description": "Number of restaurants in the property.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "4"
+          },
+          "numBars": {
+            "description": "Number of bars in the property.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "3"
+          },
+          "rating": {
+            "description": "Hummingbird Rating of the property.",
+            "type": "integer",
+            "xml": { "attribute": true },
+            "example": "4.00"
+          },
+          "locationText": {
+            "description": "Summary of the location where the property is located at.",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Noonu Atoll, Maldives"
+          },
+          "lastUpdated": {
+            "description": "Timestamp the record of property has updated last. This can be used to track if a\nproperty has changed since it has been fetched / cached.",
+            "type": "string",
+            "format": "datetime",
+            "xml": { "attribute": true },
+            "example": "2020-01-08 10:29:30"
+          },
+          "accommodations": {
+            "description": "Room types of the property.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PropertyAccommodationObject"
+            },
+            "xml": { "wrapped": true },
+            "example": [
+              { "code": "BV", "name": "Beach Villa" },
+              { "code": "DBV", "name": "Deluxe Beach Villa" },
+              { "code": "DBVP", "name": "Deluxe Beach Villa with Pool" }
+            ]
+          },
+          "transfers": {
+            "description": "Transfer types the property.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PropertyTransferObject" },
+            "xml": { "wrapped": true },
+            "example": [
+              { "code": "SPL", "name": "Sea Plane Transfer" },
+              { "code": "DMF", "name": "Domestic Flight + Speedboat Transfer" }
+            ]
+          },
+          "mealPlans": {
+            "description": "Meal plan types of the property.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PropertyMealPlanObject" },
+            "xml": { "wrapped": true },
+            "example": [
+              { "code": "BB", "name": "Breakfast" },
+              { "code": "HB", "name": "Half Board" },
+              { "code": "FB", "name": "Full Board" }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "PropertyMealPlanObject": {
+        "description": "Details of a meal plan type of a property.",
+        "properties": {
+          "code": {
+            "description": "Identification code of the meal plan.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Name of the meal plan type.",
+            "type": "string",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item" },
+        "example": { "code": "BB", "name": "Breakfast" }
+      },
+      "PropertyTransferObject": {
+        "description": "Detail of a transfer type of a property.",
+        "properties": {
+          "code": {
+            "description": "Identification code of the transfer type.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Name of the transfer type.",
+            "type": "string",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item" },
+        "example": { "code": "SPL", "name": "Sea Plane Transfer" }
+      },
+      "PropertyListingInfoObject": {
+        "properties": {
+          "id": {
+            "description": "Identification ID of the property.",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "code": {
+            "description": "Identification code of the property.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Name of the property.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "type": {
+            "description": "Type of the property.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "lastUpdated": {
+            "description": "Last updated timestamp of the property.",
+            "type": "string",
+            "format": "datetime",
+            "xml": { "attribute": true }
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item" },
+        "example": {
+          "id": 1,
+          "code": "h5cc6bdd77a6f9",
+          "name": "The Sun Siyam Irufushi",
+          "type": "Resort",
+          "lastUpdated": "2019-11-25 10:29:30"
+        }
+      },
+      "SplitStayItemObject": {
+        "properties": {
+          "code": {
+            "description": "Room identifier code",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "DBV"
+          },
+          "name": {
+            "description": "Room category name",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "Deluxe Beach Villa"
+          },
+          "checkIn": {
+            "description": "Check-in date",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "2019-12-01"
+          },
+          "checkOut": {
+            "description": "Check-out date",
+            "type": "string",
+            "xml": { "attribute": true },
+            "example": "2019-12-07"
+          }
+        },
+        "type": "object",
+        "xml": { "name": "item" }
+      },
+      "PackageTransferInfoObject": {
+        "properties": {
+          "code": {
+            "description": "Transfer code",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "name": {
+            "description": "Transfer name",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "date": {
+            "description": "Transfer date",
+            "type": "date",
+            "xml": { "attribute": true }
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" },
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/TransferVehicleInfoObject"
+            },
+            "xml": { "name": "vehicles", "wrapped": true }
+          }
+        },
+        "type": "object",
+        "example": {
+          "code": "DMF+SPL",
+          "name": "Domestic Flight + Sea Plane",
+          "date": "2020-08-10",
+          "description": [
+            "Domestic Flight + Speedboat Transfer on 2020-08-10 for 2 adults, 1 child"
+          ],
+          "vehicles": [
+            {
+              "code": "DPLN",
+              "name": "Domestic Air Plane",
+              "qty": 1,
+              "type": "air_transfer"
+            },
+            {
+              "code": "SPLN",
+              "name": "Sea Plane",
+              "qty": 1,
+              "type": "air_transfer"
+            }
+          ]
+        }
+      },
+      "TransportationItemObject": {
+        "properties": {
+          "destinationCode": {
+            "description": "Destination to which the transfer applies to.",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "startDate": {
+            "description": "Transfer start date",
+            "type": "string",
+            "xml": { "attribute": true }
+          },
+          "numPax": {
+            "description": "Number of pax to which transfer service is offered to.",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "private": {
+            "description": "Indicates whether or not the transfer is private.",
+            "type": "integer",
+            "xml": { "attribute": true }
+          },
+          "description": { "$ref": "#/components/schemas/DescriptionObject" },
+          "vehicles": {
+            "description": "Vehicles involved in the transfer.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferVehicleInfoObject"
+            },
+            "xml": { "wrapped": true }
+          },
+          "price": {
+            "description": "Price of the transfer.",
+            "properties": {
+              "currencyCode": {
+                "description": "Price of the transfer.",
+                "type": "string"
+              },
+              "amount": {
+                "description": "Price of the transfer.",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "xml": { "name": "transfer" }
+      },
+      "TransferVehicleInfoObject": {
+        "properties": {
+          "code": { "type": "string", "xml": { "attribute": true } },
+          "name": { "type": "string", "xml": { "attribute": true } },
+          "qty": { "type": "integer", "xml": { "attribute": true } },
+          "type": { "type": "string", "xml": { "attribute": true } }
+        },
+        "type": "object",
+        "xml": { "name": "item", "attribute": true },
+        "example": [
+          {
+            "code": "DPLN",
+            "name": "Domestic Air Plane",
+            "qty": 1,
+            "type": "air_transfer"
+          }
+        ]
+      },
+      "PropertyDetailResponse": {
+        "$ref": "#/components/schemas/PropertyDetailObject"
+      },
+      "DestinationPropertyListingResponse": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "code": {
+                "description": "Destination code.",
+                "xml": { "attribute": true },
+                "example": "MV"
+              },
+              "name": {
+                "description": "Name of the destination.",
+                "xml": { "attribute": true },
+                "example": "Maldives"
+              },
+              "properties": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PropertyListingInfoObject"
+                },
+                "xml": { "wrapped": true },
+                "example": [
+                  {
+                    "id": 1,
+                    "code": "h5cc6bdd77a6f9",
+                    "name": "The Sun Siyam Irufushi",
+                    "type": "Resort",
+                    "lastUpdated": "2019-11-25 10:29:30"
+                  },
+                  {
+                    "id": 2,
+                    "code": "h5cdc802f5dbed",
+                    "name": "Kuredu Island Resport & Spa",
+                    "type": "Resort",
+                    "lastUpdated": "2019-10-27 12:58:22"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "xml": {
+          "namespace": "http://hummingbird.travel/ns/hbt",
+          "prefix": "hbt"
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_auth": {
+        "type": "oauth2",
+        "description": "Use a global client_id / client_secret and your username / password combo to obtain a token",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/oauth/token",
+            "refreshUrl": "/oauth/token/refresh",
+            "scopes": { "*": "Grant all scopes" }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "search",
+      "description": "Endpoints to be consumed to search and fetch price of hotel(s) based on a given criteria."
+    },
+    {
+      "name": "properties",
+      "description": "Endpoints to list and fetch details of properties."
+    },
+    {
+      "name": "bookings",
+      "description": "Endpoints to be consumed to make & update bookings"
+    }
+  ]
+}
